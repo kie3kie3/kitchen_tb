@@ -19,24 +19,24 @@ def listBuy(message):
     Log = getter.getLog()
     rec = getter.getRec()
     todayL = {}
-    needed = config.needed * Log['config']['rotation']
+    needed = list(config.needed)[0]
     rot = Log['config']["order_rotation"]
-    for i in range(len(needed)):
-        foods = Log['config']['order'][needed[i]]
-        food = foods[rot[needed[i]] % len(foods)]
+    for i in range(len(needed) * Log['config']['rotation']):
+        foods = Log['config']['order'][needed[i % len(needed)]]
+        food = foods[rot[needed[i % len(needed)]] % len(foods)]
         for key in rec[food]['ingrs'].keys():
             if todayL.get(key):
                 todayL[key] += rec[food]['ingrs'][key] * Log['config']['people']
             else:
                 todayL[key] = rec[food]['ingrs'][key] * Log['config']['people']
         if rec[food]['need_every_day']:
-            dopFood = rec[needed[i]]
+            dopFood = rec[needed[i % len(needed)]]
             for key in dopFood['ingrs'].keys():
                 if todayL.get(key):
                     todayL[key] += dopFood['ingrs'][key] * Log['config']['people']
                 else:
                     todayL[key] = dopFood['ingrs'][key] * Log['config']['people']
-        rot[needed[i]] += 1
+        rot[needed[i % len(needed)]] += 1
     Log["config"]['order_rotation']
     getter.setLog(Log)
     print(todayL)
