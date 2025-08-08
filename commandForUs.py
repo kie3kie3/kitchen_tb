@@ -35,6 +35,7 @@ def sendListBuy(L, message):
 
 
 def listBuy(message):
+    print(123)
     todayL = {}
     sch = getter.getSch()
     cur = time.localtime()
@@ -44,25 +45,31 @@ def listBuy(message):
     sortedL = sorted(sch.keys(), key=int)
     rec = getter.getRec()
     i = 0
-    while i < len(sortedL) and today > sortedL[i]:
+    print(sortedL)
+    while i < len(sortedL) and today >= int(sortedL[i]):
+        print(i)
         i += 1
-    sortedL = sortedL[i:]    
-    i = 0    
-    while  i < len(sortedL) and i < Log['config']['rotation']:
+    sortedL = sortedL[i-1:]
+    print(sortedL)
+    i = 0
+    while  i < len(sortedL) and i <= Log['config']['rotation']:
+        print(sch[sortedL[i]])
         for key in sch[sortedL[i]].keys():
             food = sch[sortedL[i]][key]
             foodRec = rec[food]
             for elem in foodRec['ingrs'].keys():
                 if elem not in todayL:
-                    todayL[elem] = foodRec['ingrs'][elem]
+                    todayL[elem] = foodRec['ingrs'][elem] * Log['config']['people']
                 else: 
-                    todayL[elem] += foodRec['ingrs'][elem]
+                    todayL[elem] += foodRec['ingrs'][elem] * Log['config']['people']
             for elem in foodRec['need']:
                 for Elem in rec[elem]['ingrs']:
                     if Elem not in todayL:
-                        todayL[Elem] = rec[elem]['ingrs'][Elem]
+                        todayL[Elem] = rec[elem]['ingrs'][Elem] * Log['config']['people']
                     else: 
-                        todayL[Elem] += rec[elem]['ingrs'][Elem]
+                        todayL[Elem] += rec[elem]['ingrs'][Elem] * Log['config']['people']
+        i += 1
+    print(321)
     sendListBuy(todayL, message)
 
 
